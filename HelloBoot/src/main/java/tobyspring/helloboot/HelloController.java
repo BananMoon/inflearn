@@ -1,25 +1,28 @@
 package tobyspring.helloboot;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
-// @Controller : Dispatcher Servlet하고는 직접적인 연관 없고 Component Scan 목적이 아니었지만 Boot 3.0부터는 무조건 필요.
-@RequestMapping("/hello") // 클래스 레벨로 매핑할 컨트롤러 bean들을 찾은 후 메서드 레벨로 탐색하여 bean 등록한다.
-@RestController // Spring Boot 3.x 버전부터 @RequestMapping만으로는 DispatcherServlet이 인식못함.
-@MyComponent    // meta annotation으로 @Controller 등록
+
+/**
+ *  ApplicationContextAare implements하여 setter를 통해 setApplicationContext() 를 통해 ApplicationContext 세팅 가능.
+ * => SpringContainer는 자기 자신이지만, `private ApplicationContext applicationContext;` 또한 bean으로 취급. 생성자를 통해 이미 Instance가 만들어진 이후에 setApplicationContext가 호출되기 때문에 final로 선언하지 못함.
+ */
+@RequestMapping("/hello")
+@RestController
 public class HelloController {
     private final HelloService helloService;
-    // DI 주입 시 사용
-    public HelloController(HelloService helloService) {
-        this.helloService = helloService;
-    }
+    private final ApplicationContext applicationContext;
 
-    public  HelloController() {
-        helloService =  new SimpleHelloService();
+    // DI 주입 시 사용
+    public HelloController(HelloService helloService, ApplicationContext applicationContext) {
+        this.helloService = helloService;
+        this.applicationContext = applicationContext;
     }
 
     @GetMapping("/false")
@@ -38,4 +41,5 @@ public class HelloController {
         return helloService.sayHello(Objects.requireNonNull(name)); // null인 경우 예외 발생
 
     }
+
 }

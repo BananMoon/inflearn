@@ -7,16 +7,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
 // 독립적으로 실행 가능한 서블릿 애플리케이션
+@ComponentScan
 public class HelloBootApplication {
 
     public static void main(String[] args) {
@@ -28,7 +32,10 @@ public class HelloBootApplication {
 
 //        dispatchServletUseVer();
 
-        SpringContainerInitIncludeServletContainerVer();
+//        SpringContainerInitIncludeServletContainerVer();
+
+        annotationBeanRegisterVer();
+
     }
 
     /**
@@ -171,5 +178,38 @@ public class HelloBootApplication {
         applicationContext.refresh();
     }
 
+    public static void annotationBeanRegisterVer() {
+        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext() {
+            @Override
+            protected void onRefresh() {
+                super.onRefresh();
+
+                // Dispatcher Servlet 등록
+                ServletWebServerFactory serverFactory = new TomcatServletWebServerFactory();
+                WebServer webServer = serverFactory.getWebServer(servletContext -> {
+                    // Dispatcher Servlet: GenericWebApplication Context를 주입하여 Spring Container를 인지하도록 함
+                    servletContext.addServlet("dispatcherServlet", new DispatcherServlet(this)
+                    ).addMapping("/*");
+                });
+                webServer.start();
+            }
+        };
+        applicationContext.register(HelloBootApplication.class);
+        applicationContext.refresh();
+    }
+
+    /**
+     * 팩토리 메서드
+     * @param helloService
+     * @return
+     */
+    @Bean
+    public HelloController helloController(HelloService helloService) {
+        return new HelloController(helloService);
+    }
+    @Bean
+    public HelloService helloService() {
+        return new SimpleHelloService();
+    }
 
 }

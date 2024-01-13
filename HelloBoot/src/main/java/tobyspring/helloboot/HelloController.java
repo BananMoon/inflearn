@@ -1,5 +1,6 @@
 package tobyspring.helloboot;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,10 @@ import java.util.Objects;
 @RestController
 public class HelloController {
     private final HelloService helloService;
-    private final ApplicationContext applicationContext;
 
     // DI 주입 시 사용
-    public HelloController(HelloService helloService, ApplicationContext applicationContext) {
+    public HelloController(HelloService helloService) {
         this.helloService = helloService;
-        this.applicationContext = applicationContext;
     }
 
     @GetMapping("/false")
@@ -38,7 +37,10 @@ public class HelloController {
     @ResponseBody
     @GetMapping
     public String helloV2(String name) {
-        return helloService.sayHello(Objects.requireNonNull(name)); // null인 경우 예외 발생
+        if (Strings.isEmpty(name) || name.trim().length() == 0) {
+            throw new IllegalArgumentException();
+        }
+        return helloService.sayHello(name); // null인 경우 예외 발생
 
     }
 

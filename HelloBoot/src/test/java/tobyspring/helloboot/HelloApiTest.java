@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-public class HelloApiTest {
+class HelloApiTest {
     @Test
     void helloApi() {
         // http(HTTPie) localhost:8080/hello?name=Spring
@@ -22,6 +22,7 @@ public class HelloApiTest {
         Assertions.assertThat(res.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE)).startsWith(MediaType.TEXT_PLAIN_VALUE);
         // body Hello Spring
         Assertions.assertThat(res.getBody()).isEqualTo("Hello Spring");
+//        Assertions.assertThat(res.getBody()).isEqualTo("**Hello Spring**");   //   데코레이터 추가 시 결과
     }
 
     @Test

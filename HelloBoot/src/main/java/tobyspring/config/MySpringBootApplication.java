@@ -1,9 +1,7 @@
-package tobyspring.helloboot;
+package tobyspring.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import tobyspring.config.Config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,8 +15,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)   // class, interface, enum 에게 부여할 수 있음.
 @Retention(RetentionPolicy.RUNTIME)
-@Configuration
-@ComponentScan
-@Import(Config.class)   // @Import 이용하여 스캔 영역에 없는 클래스를 스캔 및 구성 정보로 추가되도록 함.
+@Configuration              // meta annotaion
+@ComponentScan              // meta annotaion
+@EnableMyAutoConfiguration  // meta annotaion
 public @interface MySpringBootApplication {
 }

@@ -21,8 +21,8 @@ class HelloApiTest {
         // header(content-type) text/plain
         Assertions.assertThat(res.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE)).startsWith(MediaType.TEXT_PLAIN_VALUE);
         // body Hello Spring
-        Assertions.assertThat(res.getBody()).isEqualTo("Hello Spring");
-//        Assertions.assertThat(res.getBody()).isEqualTo("**Hello Spring**");   //   데코레이터 추가 시 결과
+//        Assertions.assertThat(res.getBody()).isEqualTo("Hello Spring");
+        Assertions.assertThat(res.getBody()).isEqualTo("**Hello Spring**");   //   데코레이터 추가 시 결과
     }
 
     @Test

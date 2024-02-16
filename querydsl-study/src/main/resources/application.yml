@@ -1,0 +1,23 @@
+spring:
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/querydsl
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        # system.out?? ?? (logging.level.org.hibernate.SQL ??? ??? sql? ??)
+        # show_sql: true
+        # format_sql: true
+#logger? ??
+logging:
+  level:
+    org.hibernate.SQL: debug
+server:
+  port: 8081

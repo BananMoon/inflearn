@@ -4,6 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sample.cafekiosk.unit.beverage.Americano;
 import sample.cafekiosk.unit.beverage.Latte;
+import sample.cafekiosk.unit.order.Order;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,7 +30,7 @@ class CafeKioskTest {
         // when
         cafeKiosk.add(new Americano());
         // then
-        assertThat(cafeKiosk.getBeverages().size()).isEqualTo(1);
+        assertThat(cafeKiosk.getBeverages()).hasSize(1);
         assertThat(cafeKiosk.getBeverages()).hasSize(1);
 
         assertThat(cafeKiosk.calculateTotalPrice()).isEqualTo(4000);
@@ -65,8 +68,21 @@ class CafeKioskTest {
         cafeKiosk.clear();
 
         // then
-        assertThat(cafeKiosk.getBeverages()).hasSize(0);
+        assertThat(cafeKiosk.getBeverages()).isEmpty();
         assertThat(cafeKiosk.calculateTotalPrice()).isZero();
+    }
+
+    @Test
+    @DisplayName("전체 음료수 값을 계산한다.")
+    void calcuateTotalPrice_tdd() {
+        // given
+        CafeKiosk cafeKiosk = new CafeKiosk();
+        cafeKiosk.add(new Americano());
+        cafeKiosk.add(new Latte());
+        // when
+        int totalPrice = cafeKiosk.calculateTotalPrice_TDD();
+        // then
+        assertThat(totalPrice).isEqualTo(8500);
     }
 
     @Test
@@ -94,6 +110,46 @@ class CafeKioskTest {
         assertThatThrownBy(() -> cafeKiosk.add(new Americano(), 0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("음료는 1잔부터 주문할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("[SUCCESS] 가게 운영 시간 (10:00~22:00) 내에는 주문을 생성할 수 있다")
+    void order_success() {
+        // given
+        CafeKiosk cafeKiosk = new CafeKiosk();
+        cafeKiosk.add(new Latte());
+        LocalDateTime now = LocalDateTime.of(2024,2,21,22,0);
+        // when
+        Order order = cafeKiosk.order(now);
+        // then
+        assertThat(order.getOrderedBeverages()).hasSize(1);
+        assertThat(order.getOrderedBeverages().get(0).getName()).isEqualTo("라떼");
+        assertThat(order.getOrderDateTime()).isEqualTo(now);
+
+    }
+
+    @Test
+    @DisplayName("[FALIED] 최소 1개 이상 메뉴를 선택하지 않으면 주문할 수 없다")
+    void order_nonPicked_failed() {
+        // given
+        CafeKiosk cafeKiosk = new CafeKiosk();
+        LocalDateTime now = LocalDateTime.of(2024,2,21,10,0);
+
+        assertThatThrownBy(() -> cafeKiosk.order(now))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("최소 1개 이상 주문해주세요.");
+    }
+    @Test
+    @DisplayName("[FALIED] 가게 운영 시간 (10:00~22:00) 외에는 주문을 생성할 수 없다")
+    void order_nonOpenTime_failed() {
+        // given
+        CafeKiosk cafeKiosk = new CafeKiosk();
+        cafeKiosk.add(new Americano());
+        LocalDateTime now = LocalDateTime.of(2024,2,21,8,59);
+
+        assertThatThrownBy(() -> cafeKiosk.order(now))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("가게 운영 시간 (10:00~22:00) 이 아닙니다.");
     }
 
 }

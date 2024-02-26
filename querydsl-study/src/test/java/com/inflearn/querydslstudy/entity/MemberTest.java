@@ -20,7 +20,7 @@ class MemberTest {
     EntityManager em;
 
     @Test
-    public void testEntity() {
+    void jpqlTest() {
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
         em.persist(teamA);

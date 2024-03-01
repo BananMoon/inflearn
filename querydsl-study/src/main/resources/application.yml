@@ -13,8 +13,8 @@ spring:
     properties:
       hibernate:
         # system.out?? ?? (logging.level.org.hibernate.SQL ??? ??? sql? ??)
-        # show_sql: true
-        # format_sql: true
+         show_sql: true
+         format_sql: true
 #logger? ??
 logging:
   level:

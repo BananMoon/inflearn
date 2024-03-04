@@ -10,6 +10,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -71,8 +72,8 @@ class QuerydslMiddleLevelTest {
                 .fetch();
 
         result.forEach(r -> {
-                    System.out.println("username = " + r.get(member.username));
-                    System.out.println("age = " + r.get(member.age));
+                    assertThat(r.get(member.username)).isNotNull();
+                    assertThat(r.get(member.age)).isNotNull();
         });
     }
 
@@ -85,9 +86,9 @@ class QuerydslMiddleLevelTest {
         List<MemberDto> result = em.createQuery("select new com.inflearn.querydslstudy.dto.MemberDto(m.username, m.age) from Member m", MemberDto.class)
                 .getResultList();
 
-        result.forEach(memberDto -> {
-            System.out.println("MemberDto = " + memberDto);
-        });
+        assertThat(result).extracting("username").containsAll(List.of("member1", "member2", "member3", "member4"));
+        assertThat(result).extracting("age").containsAll(List.of(10, 20, 30, 40));
+        assertThat(result).hasSize(4);
     }
     /**
      * QueryDsl 빈 생성 - 프로퍼티 접근,
@@ -105,9 +106,9 @@ class QuerydslMiddleLevelTest {
                 .from(member)
                 .fetch();
 
-        result.forEach(memberDto -> {
-            System.out.println("MemberDto = " + memberDto);
-        });
+        assertThat(result).extracting("username").containsAll(List.of("member1", "member2", "member3", "member4"));
+        assertThat(result).extracting("age").containsAll(List.of(10, 20, 30, 40));
+        assertThat(result).hasSize(4);
     }
 
     @DisplayName("3.Field 주입 통해 DTO 반환할 수 있다.(Querydsl)")
@@ -225,7 +226,7 @@ class QuerydslMiddleLevelTest {
                 .from(member)
                 .fetch();
 
-        assertThat(dtoResult).extracting("name")
+        assertThat(dtoResult).extracting("username")
                 .isNotNull();
         assertThat(dtoResult).extracting("age")
                 .isNotNull();
@@ -266,5 +267,50 @@ class QuerydslMiddleLevelTest {
                 .selectFrom(member)
                 .where(whereBuilder)
                 .fetch();
+    }
+
+    @DisplayName("where절을 콤마로 연결하면 필드가 null인 경우 해당 조건을 무시할 수 있다.")
+    @Test
+    void dynamicQuery_whereParam() {
+        String member2Name = "member2";
+        int member2Age = 20;
+        List<Member> member2Result = searchMember2(member2Name, member2Age);
+        assertThat(member2Result).hasSize(1);
+
+        assertThat(member2Result).extracting("username")
+                .containsAll(List.of("member2"));
+        assertThat(member2Result).extracting("age")
+                .containsAll(List.of(20));
+    }
+
+    /**
+     * 장점 1. where 조건 내에 Null값 필드는 무시된다.
+     * 장점 2. 조건 메서드를 다른 쿼리에서도 재사용할 수 있다.
+     *    ㄴ 조건 메서드들을 조합하여 의미를 전달할 수 있다.
+     *    Ex) isServiceable 메서드 : '노출 가능' && '기간 내에 존재' 의 조건메서드 조합
+     * 장점 3. 쿼리 자체의 가독성이 높아진다.
+     *
+     */
+    private List<Member> searchMember2(String usernameCond, int ageCond) {
+        return jpaQueryFactory
+                .selectFrom(member)
+                .where(usernameEq(usernameCond), ageEq(ageCond))
+                .fetch();
+    }
+
+    private BooleanExpression ageEq(Integer ageCond) {
+        return ageCond != null ? member.age.eq(ageCond) : null;
+    }
+
+    private BooleanExpression usernameEq(String usernameCond) {
+        return usernameCond != null ? member.username.eq(usernameCond) :  null;
+    }
+
+    /**
+     * 위 메서드들을 이용해서 where().and() 에 사용/조립할 수도 있다.
+     * - 아래의 경우 null 처리는 따로 해줘야 한다.
+     */
+    private BooleanExpression allEq(String usernameCond, Integer ageCond) {
+        return usernameEq(usernameCond).and(ageEq(ageCond));
     }
 }

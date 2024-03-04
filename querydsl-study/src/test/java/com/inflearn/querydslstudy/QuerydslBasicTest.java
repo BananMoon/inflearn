@@ -3,11 +3,13 @@ package com.inflearn.querydslstudy;
 import com.inflearn.querydslstudy.entity.Member;
 import com.inflearn.querydslstudy.entity.QMember;
 import com.inflearn.querydslstudy.entity.Team;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.assertj.core.util.Strings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.inflearn.querydslstudy.entity.QMember.member;
 import static com.inflearn.querydslstudy.entity.QTeam.team;
@@ -178,6 +181,18 @@ class QuerydslBasicTest {
         assertThat(teamB.get(team.name)).isEqualTo("teamB");
         assertThat(teamA.get(member.age.avg())).isEqualTo(15);
         assertThat(teamB.get(member.age.avg())).isEqualTo(35);
+    }
+
+    @DisplayName("Querydsl- distinct 사용할 수 있다.")
+    @Test
+    void distinct() {
+        List<Integer> result = jpaQueryFactory
+                .select(member.age).distinct()
+                .from(member)
+                .fetch();
+
+        assertThat(result).containsAll(List.of(10, 20, 30, 40));
+        result.forEach(System.out::println);
     }
 
 }

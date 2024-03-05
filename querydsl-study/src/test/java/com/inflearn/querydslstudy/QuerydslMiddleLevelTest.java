@@ -308,9 +308,85 @@ class QuerydslMiddleLevelTest {
 
     /**
      * 위 메서드들을 이용해서 where().and() 에 사용/조립할 수도 있다.
-     * - 아래의 경우 null 처리는 따로 해줘야 한다.
+     * - null 처리는 따로 해줘야 한다.
      */
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    /**
+     * 수정/삭제 벌크 연산
+     * 단일 쿼리 수행이 아닌 대량의 데이터를 1번의 수정/삭제 쿼리 호출하는 방식
+     */
+    @DisplayName("대량의 데이터를 한번의 벌크 수정 쿼리로 수행할 수 있다.")
+    @Test
+    void bulkUpdate() {
+        long updateCount = jpaQueryFactory
+                .update(member)
+                .set(member.username, "미성년자")
+                .where(member.age.lt(20))
+                .execute();
+
+        List<String> usernames = jpaQueryFactory
+                .select(member.username).from(member)
+                .where(member.age.lt(20))
+                .fetch();
+        assertThat(updateCount).isEqualTo(1);
+        assertThat(usernames).hasSize(1);
+        assertThat(usernames).containsAll(List.of("미성년자"));
+    }
+
+    @DisplayName("숫자에 1 더해서 업데이트한다.")
+    @Test
+    void add() {
+        long count = jpaQueryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+        List<Member> result = jpaQueryFactory
+                .selectFrom(member)
+                .fetch();
+
+        assertThat(count).isEqualTo(4);
+        assertThat(result).extracting("age")
+                .containsAll(List.of(11, 21, 31, 41));
+    }
+
+    @DisplayName("숫자에 2 곱해서 업데이트한다")
+    @Test
+    void multiply() {
+        long count = jpaQueryFactory
+                .update(member)
+                .set(member.age, member.age.multiply(2))
+                .execute();
+        List<Member> result = jpaQueryFactory
+                .selectFrom(member)
+                .fetch();
+
+        assertThat(count).isEqualTo(4);
+        assertThat(result).extracting("age")
+                .containsAll(List.of(20, 40, 60, 80));
+    }
+
+    /**
+     * 벌크 연산은 DB의 데이터를 바로 접근/작업하여서 벌크 작업 후 바로 쿼리 조회하면 영속성 컨텍스트에 있는 데이터를
+     * 가져오면서 데이터 간 차이가 발생하는 문제 있었음. (@Modifying 등으로 강제 영속성 컨텍스트 정리 필요했음)
+     * ㄴ 현재 Hibernate 6 을 넘으면서 해당 문제가 해결된 것으로 보임.
+     */
+    @DisplayName("쿼리 1개로 대량 데이터 삭제한다.")
+    @Test
+    void bulkDelete() {
+        long deleteCount = jpaQueryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+//        em.flush();
+//        em.clear();
+
+        List<Member> result = jpaQueryFactory
+                .selectFrom(member)
+                .fetch();
+        assertThat(deleteCount).isEqualTo(3);
+        assertThat(result).isEqualTo(4);
     }
 }

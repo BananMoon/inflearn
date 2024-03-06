@@ -11,6 +11,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -332,8 +333,9 @@ class QuerydslMiddleLevelTest {
                 .where(member.age.lt(20))
                 .fetch();
         assertThat(updateCount).isEqualTo(1);
-        assertThat(usernames).hasSize(1);
-        assertThat(usernames).containsAll(List.of("미성년자"));
+        assertThat(usernames)
+                .hasSize(1)
+                .containsAll(List.of("미성년자"));
     }
 
     @DisplayName("숫자에 1 더해서 업데이트한다.")
@@ -387,6 +389,37 @@ class QuerydslMiddleLevelTest {
                 .selectFrom(member)
                 .fetch();
         assertThat(deleteCount).isEqualTo(3);
-        assertThat(result).isEqualTo(4);
+        assertThat(result).hasSize(4);
+    }
+
+    @DisplayName("member를 M으로 replace하기위해 SQL Function 호출한다.")
+    @Test
+    void sqlFunction() {
+        String result = jpaQueryFactory
+                .select(Expressions.stringTemplate("function('replace', {0}, {1}, {2})", member.username, "member", "M"))
+                .from(member)
+                .fetchFirst();
+        assertThat(result).startsWith("M");
+    }
+
+    @DisplayName("ANSI 표준함수들은 Querydsl에서 대부분 내장하고 있다.")
+    @Test
+    void sqlFunction_ansi() {
+        em.persist(new Member("MEMBER5", 50));
+
+        List<String> result = jpaQueryFactory
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(Expressions.stringTemplate("function('lower', {0})", member.username)))
+                .fetch();
+        // ansi 표준함수들은 querydsl이 제공함.
+        List<String> result2 = jpaQueryFactory
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(member.username.lower()))
+                .fetch();
+        // 모두 소문자이므로
+        assertThat(result).hasSize(4);
+        assertThat(result2).hasSize(4);
     }
 }

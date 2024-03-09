@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA는 필수로 필요로 하며 PROTECTED까지 허용함.
-@ToString(of = {"id", "username", "age"})           // 연관관계인 team은 추가하면 무한루프 발생함.
+@ToString(of = {"id", "username", "age"})           // 연관관계인 team은 추가하면 안됨. 무한루프 발생함.
 public class Member {
     @Id
     @GeneratedValue

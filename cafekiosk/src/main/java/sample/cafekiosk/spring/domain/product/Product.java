@@ -7,15 +7,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sample.cafekiosk.spring.domain.BaseEntity;
 
+/**
+ * 상품 테이블 Entity.
+ * - 어떤 Order에 담겨있는지 알 필요 없음. -> ProductOrder 필드 갖고있을 필요 없음.
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table
 public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String productNumber;   // 001, 002..
 
     @Column(nullable = false)

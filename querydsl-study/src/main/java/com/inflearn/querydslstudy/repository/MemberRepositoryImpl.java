@@ -119,7 +119,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         ageGoe(condition.getAgeGoe()),
                         ageLoe(condition.getAgeLoe()));
 
-        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchCount());
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
     }
 
     /**
@@ -147,12 +147,21 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .offset(pageable.getOffset())       // 시작 페이지
                 .limit(pageable.getPageSize())      // 1번 조회 시 조회 데이터 갯수
                 .fetch();
-        // 경우에 따라 count 쿼리 수행 X
-        if (pageable.getOffset() == 0 && content.size() <= pageable.getPageSize()) {
+        System.out.println("조회 시작 데이터 Number (pageable.offset) : " + pageable.getOffset());
+        System.out.println("한 페이지당 데이터 갯수 (pageable.pageSize) : " + pageable.getPageSize());
+        System.out.println("요청한 페이지 번호 (pageable.PageNumber) : " + pageable.getPageNumber());
+        System.out.println("조회 전체 크기(content.size) : " + content.size());
+
+        // 방법 1.
+        // 시작 페이지
+        // 마지막 페이지 : 데이터가 없거나, 데이터 크기가 pageSize보다 작은 경우
+        // 한계점 1개 - 데이터크기가 딱 pageSize랑 같을 때는 카운트 쿼리를 피할 수 없는 듯함.
+        if ((pageable.getOffset() == 0 && content.size() <= pageable.getPageSize())
+            || (content.isEmpty() || content.size() < pageable.getPageSize())) {
             return new PageImpl<>(content, pageable, content.size());
         }
-        // count 쿼리
-        Long total = queryFactory
+
+        Long count = queryFactory
                 .select(member.count()) // count(member_id) 로 수행됨.
                 .from(member)
                 .leftJoin(member.team, team)
@@ -161,7 +170,18 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         ageGoe(condition.getAgeGoe()),
                         ageLoe(condition.getAgeLoe()))
                 .fetchOne();
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(content, pageable, count);
+        // 방법 2. PageableExecutionUtils 사용!
+        // 한계점 2개 - 첫번째 페이지일 때는 count 쿼리 수행 안되는데, 마지막 페이지의 경우에는 수행됨..
+        /*JPAQuery<Long> countQuery = queryFactory
+                .select(member.count()) // count(member_id) 로 수행됨.
+                .from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()));
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);*/
     }
 
     private BooleanExpression usernameEq(String username) {

@@ -29,8 +29,9 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<OrderProduct> orderProducts;
 
-    private Order(List<Product> products, LocalDateTime orderedDateTime) {
-        this.status = OrderStatus.INIT;
+    @Builder
+    private Order(OrderStatus orderStatus, List<Product> products, LocalDateTime orderedDateTime) {
+        this.status = orderStatus;
         this.totalPrice = calculateTotalPrice(products);
         this.orderedDateTime = orderedDateTime;
         this.orderProducts = products.stream()
@@ -39,7 +40,11 @@ public class Order extends BaseEntity {
     }
 
     public static Order from(List<Product> products, LocalDateTime registeredDateTime) {
-        return new Order(products, registeredDateTime);
+        return Order.builder()
+                .orderStatus(OrderStatus.INIT)
+                .products(products)
+                .orderedDateTime(registeredDateTime)
+                .build();
     }
 
     private static int calculateTotalPrice(List<Product> products) {

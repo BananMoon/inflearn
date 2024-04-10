@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import sample.cafekiosk.spring.api.service.product.dto.ProductCreateRequest;
+import sample.cafekiosk.spring.api.service.product.dto.ProductCreateServiceRequest;
 import sample.cafekiosk.spring.api.service.product.dto.ProductResponse;
 import sample.cafekiosk.spring.domain.product.Product;
 import sample.cafekiosk.spring.domain.product.ProductRepository;
@@ -37,7 +37,7 @@ class ProductServiceTest {
         Product givenProduct = createProduct("001", HANDMADE, SELLING, "바닐라 라떼", 5000);
         productRepository.save(givenProduct);
 
-        ProductCreateRequest request = new ProductCreateRequest(HANDMADE, SELLING, "와플", 7000);
+        ProductCreateServiceRequest request = new ProductCreateServiceRequest(HANDMADE, SELLING, "와플", 7000);
         // when
         ProductResponse result = productService.createProduct(request);
         // then
@@ -59,7 +59,7 @@ class ProductServiceTest {
     void createProduct_noProduct() {
         // given
         String targetProductNumber = "001";
-        ProductCreateRequest request = new ProductCreateRequest(HANDMADE, SELLING, "와플", 7000);
+        ProductCreateServiceRequest request = new ProductCreateServiceRequest(HANDMADE, SELLING, "와플", 7000);
         // when
         ProductResponse result = productService.createProduct(request);
         // then

@@ -2,10 +2,9 @@ package sample.cafekiosk.spring.api.controller.product;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import sample.cafekiosk.spring.ApiResponse;
 import sample.cafekiosk.spring.api.service.product.ProductService;
 import sample.cafekiosk.spring.api.service.product.dto.ProductCreateRequest;
 import sample.cafekiosk.spring.api.service.product.dto.ProductResponse;
@@ -18,13 +17,15 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/api/v1/products/new")
-    public void createProduct(@Valid ProductCreateRequest request) {
-        productService.createProduct(request);
+    public ApiResponse<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest request) {   // Post 메서드, Request Body
+        return ApiResponse.ok(productService.createProduct(request.toServiceRequest()));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/v1/products/selling")
-    public List<ProductResponse> getSellingProducts() {
-        return productService.getSellingProducts();
+    public ApiResponse<List<ProductResponse>> getSellingProducts() {
+        return ApiResponse.ok(productService.getSellingProducts());
     }
 }

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import sample.cafekiosk.spring.api.service.order.dto.OrderCreateRequest;
 import sample.cafekiosk.spring.api.service.order.dto.OrderCreateResponse;
+import sample.cafekiosk.spring.api.service.order.dto.OrderCreateServiceRequest;
 import sample.cafekiosk.spring.domain.product.Product;
 import sample.cafekiosk.spring.domain.product.ProductRepository;
 import sample.cafekiosk.spring.domain.product.ProductSellingStatus;
@@ -42,7 +42,7 @@ class OrderServiceTest {
         Product product3 = createProduct("003", ProductType.BAKERY, 2000, "크로아상");
         productRepository.saveAll(List.of(product1, product2, product3));
 
-        OrderCreateRequest request = new OrderCreateRequest(List.of("001", "002"));
+        OrderCreateServiceRequest request = new OrderCreateServiceRequest(List.of("001", "002"));
         // when
         OrderCreateResponse response = orderService.createOrder(request, registeredDateTime);
 
@@ -70,8 +70,7 @@ class OrderServiceTest {
         Product product3 = createProduct("003", ProductType.BAKERY, 2000, "크로아상");
         productRepository.saveAll(List.of(product1, product2, product3));
 
-        OrderCreateRequest request = new OrderCreateRequest(List.of("001", "001"));
-        // TODO 재고 엔티티 관련 추가 로직이 있어야 할 것 같은데~~
+        OrderCreateServiceRequest request = new OrderCreateServiceRequest(List.of("001", "001"));
 
         // when
         OrderCreateResponse response = orderService.createOrder(request, registeredDateTime);
@@ -104,7 +103,7 @@ class OrderServiceTest {
         Stock stockBottle = Stock.create("002", 2);
         stockRepository.saveAll(List.of(stockBakery, stockBottle));
 
-        OrderCreateRequest request = new OrderCreateRequest(List.of("001", "001", "002", "003"));
+        OrderCreateServiceRequest request = new OrderCreateServiceRequest(List.of("001", "001", "002", "003"));
         // when
         OrderCreateResponse response = orderService.createOrder(request, registeredDateTime);
 
@@ -146,7 +145,7 @@ class OrderServiceTest {
         Stock stockBottle = Stock.create("002", 1);
         stockRepository.saveAll(List.of(stockBakery, stockBottle));
 
-        OrderCreateRequest request = new OrderCreateRequest(List.of("001", "001", "002", "003"));
+        OrderCreateServiceRequest request = new OrderCreateServiceRequest(List.of("001", "001", "002", "003"));
         // when // then
         assertThatThrownBy(() -> orderService.createOrder(request, registeredDateTime))
                 .isInstanceOf(IllegalArgumentException.class)

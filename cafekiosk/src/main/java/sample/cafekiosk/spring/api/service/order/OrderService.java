@@ -3,8 +3,8 @@ package sample.cafekiosk.spring.api.service.order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sample.cafekiosk.spring.api.service.order.dto.OrderCreateRequest;
 import sample.cafekiosk.spring.api.service.order.dto.OrderCreateResponse;
+import sample.cafekiosk.spring.api.service.order.dto.OrderCreateServiceRequest;
 import sample.cafekiosk.spring.domain.order.Order;
 import sample.cafekiosk.spring.domain.order.OrderRepository;
 import sample.cafekiosk.spring.domain.product.Product;
@@ -30,7 +30,7 @@ public class OrderService {
     private final StockRepository stockRepository;
 
     // 비즈니스 로직은 TDD로 짜봄
-    public OrderCreateResponse createOrder(OrderCreateRequest request, LocalDateTime registeredDateTime) {
+    public OrderCreateResponse createOrder(OrderCreateServiceRequest request, LocalDateTime registeredDateTime) {
         List<String> productNumbers = request.getProductNumbers();
         List<Product> products = findProductsBy(productNumbers);
         // 재고 체크해야하는 아이템 필터링

@@ -12,7 +12,6 @@ public class MailSendClient {
 
     public boolean sendEmail(String fromEmail, String toEmail, String title, String content) {
         log.info("메일 전송");
-
-        return true;
+        throw new IllegalArgumentException("메일 전송");
     }
 }

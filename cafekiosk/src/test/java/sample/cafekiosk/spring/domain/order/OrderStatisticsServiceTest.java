@@ -5,6 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
+import sample.cafekiosk.spring.client.mail.MailSendClient;
 import sample.cafekiosk.spring.domain.history.MailSendHistory;
 import sample.cafekiosk.spring.domain.history.MailSendHistoryRepository;
 import sample.cafekiosk.spring.domain.product.Product;
@@ -16,8 +19,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Transactional
 class OrderStatisticsServiceTest {
     @Autowired
     private OrderStatisticsService orderStatisticsService;
@@ -29,6 +35,8 @@ class OrderStatisticsServiceTest {
     private ProductRepository productRepository;
     @Autowired
     private MailSendHistoryRepository mailSendHistoryRepository;
+    @MockBean
+    private MailSendClient mailSendClient;  // 행동 정의를 해줘야함.
 
     @DisplayName("결제완료된 주문들을 조회하여 매출 통계 매일을 전송한다.")
     @Test
@@ -46,6 +54,10 @@ class OrderStatisticsServiceTest {
         Order order2 = createPaymentCompletedOrder(products, now);
         Order order3 = createPaymentCompletedOrder(products, LocalDateTime.of(2024,4,1,23,59, 59));
         Order order4 = createPaymentCompletedOrder(products, LocalDateTime.of(2024,4,2,0,0, 0));
+
+        // Stubbing (Mock 객체의 행의 정의)
+        when(mailSendClient.sendEmail(any(String.class), any(String.class), any(String.class), any(String.class)))
+                .thenReturn(true);
         // when
         boolean result = orderStatisticsService.sendOrderStatisticsMail(now.toLocalDate(), "test@test.com");
 

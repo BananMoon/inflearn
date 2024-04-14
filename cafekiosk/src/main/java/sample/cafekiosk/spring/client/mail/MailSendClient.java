@@ -15,4 +15,14 @@ public class MailSendClient {
 
         return true;
     }
+
+    public void a() {
+        log.info("a");
+    }
+    public void b() {
+        log.info("b");
+    }
+    public void c() {
+        log.info("c");
+    }
 }

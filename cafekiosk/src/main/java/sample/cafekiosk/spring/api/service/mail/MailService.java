@@ -25,6 +25,12 @@ public class MailService {
     public boolean sendMail(String fromEmail, String toEmail, String title, String content) {
         // 메일 발송 클라이언트 API 호출
         boolean result = mailSendClient.sendEmail(fromEmail, toEmail, title, content);
+
+        mailSendClient.a();
+        mailSendClient.b();
+        mailSendClient.c();
+
+
         // 히스토리 저장
         if (result) {
             mailSendHistory.save(MailSendHistory.builder()

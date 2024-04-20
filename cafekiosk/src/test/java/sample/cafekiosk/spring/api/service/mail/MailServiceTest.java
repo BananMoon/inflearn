@@ -8,7 +8,6 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import sample.cafekiosk.spring.client.mail.MailSendClient;
 import sample.cafekiosk.spring.domain.history.MailSendHistory;
 import sample.cafekiosk.spring.domain.history.MailSendHistoryRepository;
@@ -53,5 +52,4 @@ class MailServiceTest {
         assertThat(result).isTrue();
         Mockito.verify(mailSendHistoryRepository, Mockito.times(1)).save(any(MailSendHistory.class));
     }
-
 }

@@ -1,10 +1,13 @@
 package sample.cafekiosk.spring.domain.product;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import sample.cafekiosk.spring.config.JpaConfig;
 
 import java.util.List;
 
@@ -15,9 +18,11 @@ import static sample.cafekiosk.spring.domain.product.ProductSellingStatus.SELLIN
 
 //@SpringBootTest
 @DataJpaTest        // @Transactional이 붙어있는 애노테이션
+@Import(JpaConfig.class)
 @ActiveProfiles("test")
 class ProductRepositoryTest {
-
+    @Autowired
+    JPAQueryFactory jpaQueryFactory;
     @Autowired
     ProductRepository productRepository;
     @DisplayName("원하는 판매 상품 상태를 가진 제품을 전체 조회한다.")
@@ -28,6 +33,7 @@ class ProductRepositoryTest {
 
         Product stopSellingLatte = createProduct("001", ProductType.HANDMADE, STOP_SELLING, "카페 라떼", 5000);
         productRepository.saveAll(List.of(sellingBakery, stopSellingLatte));
+
         // when
         List<Product> results = productRepository.findAllBySellingStatusIn(List.of(SELLING, STOP_SELLING));
 
@@ -74,6 +80,7 @@ class ProductRepositoryTest {
         Product stopSellingLatte = createProduct("002", ProductType.HANDMADE, STOP_SELLING, "카페 라떼", 5000);
         Product holdShavedIce = createProduct(targetProductNumber, ProductType.HANDMADE, HOLD, "팥빙수", 7000);
         productRepository.saveAll(List.of(sellingBakery, stopSellingLatte, holdShavedIce));
+        productRepository.flush();
 
         // when
         String latestProductNumber = productRepository.findLatestProductNumberOrderByIdDesc();

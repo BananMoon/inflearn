@@ -1,5 +1,6 @@
 package sample.cafekiosk.spring.api.service.order;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import sample.cafekiosk.spring.api.service.order.dto.OrderCreateResponse;
 import sample.cafekiosk.spring.api.service.order.dto.OrderCreateServiceRequest;
+import sample.cafekiosk.spring.domain.order.OrderRepository;
+import sample.cafekiosk.spring.domain.orderproduct.OrderProductRepository;
 import sample.cafekiosk.spring.domain.product.Product;
 import sample.cafekiosk.spring.domain.product.ProductRepository;
 import sample.cafekiosk.spring.domain.product.ProductSellingStatus;
@@ -22,15 +25,29 @@ import static org.assertj.core.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@Transactional    // TODO 이슈 있음.
+//@Transactional    // TODO 이슈 있음.
 //@DataJpaTest  // JPA 관련 빈들만 조회하여 Service 클래스를 조회하지 못함.
 class OrderServiceTest {
     @Autowired
     private OrderService orderService;
     @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
     private ProductRepository productRepository;
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private OrderProductRepository orderProductRepository;
+    @AfterEach
+    void tearDown() {
+        // 엔티티 간 연관관계로 인해 Side Effect 발생 가능함.
+        // product를 먼저 지우려 하면 orderProduct에서 참조하고 있으므로 이슈 발생. orderProduct를 먼저 지워줘야 함.
+        orderProductRepository.deleteAllInBatch();
+        orderRepository.deleteAllInBatch();
+        productRepository.deleteAllInBatch();
+
+        stockRepository.deleteAllInBatch();
+    }
     @Test
     @DisplayName("주문번호 리스트를 받아 주문을 생성한다.")
     void createOrder() {

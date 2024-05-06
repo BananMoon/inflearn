@@ -36,6 +36,7 @@ class ProductServiceTest {
         String targetProductNumber = "002";
         Product givenProduct = createProduct("001", HANDMADE, SELLING, "바닐라 라떼", 5000);
         productRepository.save(givenProduct);
+        productRepository.flush();
 
         ProductCreateServiceRequest request = new ProductCreateServiceRequest(HANDMADE, SELLING, "와플", 7000);
         // when

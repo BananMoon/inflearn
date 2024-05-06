@@ -8,6 +8,7 @@ import sample.cafekiosk.spring.domain.product.Product;
 
 /**
  * 일대다 다대일 관계 풀어주는 중간테이블 역할의 Entity.
+ * 여기서 Order, Product FK를 갖고있음.
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

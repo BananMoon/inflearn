@@ -8,7 +8,6 @@ import sample.cafekiosk.spring.domain.product.Product;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -25,6 +24,7 @@ public class Order extends BaseEntity {
 
     private LocalDateTime orderedDateTime;
 
+    // 다대다 연관관계를 풀어주는 중간 매핑.
     // mappedBy : OrderProduct 내 필드명으로 지정하여 매핑.
     @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<OrderProduct> orderProducts;
@@ -36,7 +36,7 @@ public class Order extends BaseEntity {
         this.orderedDateTime = orderedDateTime;
         this.orderProducts = products.stream()
                 .map(product -> new OrderProduct(this, product))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static Order from(List<Product> products, LocalDateTime registeredDateTime) {

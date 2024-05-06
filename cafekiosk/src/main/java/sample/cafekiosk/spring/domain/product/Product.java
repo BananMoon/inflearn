@@ -9,7 +9,7 @@ import sample.cafekiosk.spring.domain.BaseEntity;
 
 /**
  * 상품 테이블 Entity.
- * - 어떤 Order에 담겨있는지 알 필요 없음. -> ProductOrder 필드 갖고있을 필요 없음.
+ * - Product는 본인이 어떤 Order에 담겨있는지 알 필요 없음. -> ProductOrder 필드 갖고있지 않아도 됨.
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

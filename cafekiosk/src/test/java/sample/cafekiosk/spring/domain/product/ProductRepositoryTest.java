@@ -31,7 +31,7 @@ class ProductRepositoryTest {
         // given
         Product sellingBakery = createProduct("001", ProductType.BAKERY, SELLING, "소금빵", 3500);
 
-        Product stopSellingLatte = createProduct("001", ProductType.HANDMADE, STOP_SELLING, "카페 라떼", 5000);
+        Product stopSellingLatte = createProduct("002", ProductType.HANDMADE, STOP_SELLING, "카페 라떼", 5000);
         productRepository.saveAll(List.of(sellingBakery, stopSellingLatte));
 
         // when
@@ -42,7 +42,7 @@ class ProductRepositoryTest {
         assertThat(results).extracting("productNumber", "name", "sellingStatus")
                 .containsExactlyInAnyOrder(
                         tuple("001", "소금빵", SELLING),
-                        tuple("001", "카페 라떼", STOP_SELLING)
+                        tuple("002", "카페 라떼", STOP_SELLING)
                 );
 
     }

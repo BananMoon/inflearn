@@ -4,9 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import sample.cafekiosk.spring.IntigrationTestSupport;
 import sample.cafekiosk.spring.api.service.order.dto.OrderCreateResponse;
 import sample.cafekiosk.spring.api.service.order.dto.OrderCreateServiceRequest;
 import sample.cafekiosk.spring.domain.order.OrderRepository;
@@ -23,11 +21,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-@ActiveProfiles("test")
-@SpringBootTest
+
 //@Transactional    // TODO 이슈 있음.
 //@DataJpaTest  // JPA 관련 빈들만 조회하여 Service 클래스를 조회하지 못함.
-class OrderServiceTest {
+class OrderServiceTest extends IntigrationTestSupport {
     @Autowired
     private OrderService orderService;
     @Autowired

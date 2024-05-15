@@ -3,9 +3,8 @@ package sample.cafekiosk.spring.api.service.product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import sample.cafekiosk.spring.IntigrationTestSupport;
 import sample.cafekiosk.spring.api.service.product.dto.ProductCreateServiceRequest;
 import sample.cafekiosk.spring.api.service.product.dto.ProductResponse;
 import sample.cafekiosk.spring.domain.product.Product;
@@ -17,13 +16,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
-import static sample.cafekiosk.spring.domain.product.ProductSellingStatus.*;
+import static sample.cafekiosk.spring.domain.product.ProductSellingStatus.SELLING;
 import static sample.cafekiosk.spring.domain.product.ProductType.HANDMADE;
 
-@SpringBootTest
 @Transactional
-@ActiveProfiles("test")
-class ProductServiceTest {
+class ProductServiceTest extends IntigrationTestSupport {
     @Autowired
     private ProductService productService;
     @Autowired

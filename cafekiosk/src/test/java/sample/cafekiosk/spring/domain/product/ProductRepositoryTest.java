@@ -4,23 +4,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import sample.cafekiosk.spring.config.JpaConfig;
+import sample.cafekiosk.spring.RepositoryTestSupport;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static sample.cafekiosk.spring.domain.product.ProductSellingStatus.*;
-import static sample.cafekiosk.spring.domain.product.ProductSellingStatus.SELLING;
 
-//@SpringBootTest
-@DataJpaTest        // @Transactional이 붙어있는 애노테이션
-@Import(JpaConfig.class)
-@ActiveProfiles("test")
-class ProductRepositoryTest {
+class ProductRepositoryTest extends RepositoryTestSupport {
     @Autowired
     JPAQueryFactory jpaQueryFactory;
     @Autowired

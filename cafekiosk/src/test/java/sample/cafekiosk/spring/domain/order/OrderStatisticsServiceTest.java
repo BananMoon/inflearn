@@ -4,10 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
-import sample.cafekiosk.spring.client.mail.MailSendClient;
+import sample.cafekiosk.spring.IntigrationTestSupport;
 import sample.cafekiosk.spring.domain.history.MailSendHistory;
 import sample.cafekiosk.spring.domain.history.MailSendHistoryRepository;
 import sample.cafekiosk.spring.domain.product.Product;
@@ -20,11 +18,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 @Transactional
-class OrderStatisticsServiceTest {
+class OrderStatisticsServiceTest extends IntigrationTestSupport {
     @Autowired
     private OrderStatisticsService orderStatisticsService;
     @Autowired
@@ -35,8 +32,6 @@ class OrderStatisticsServiceTest {
     private ProductRepository productRepository;
     @Autowired
     private MailSendHistoryRepository mailSendHistoryRepository;
-    @MockBean
-    private MailSendClient mailSendClient;  // 행동 정의를 해줘야함.
 
     @DisplayName("결제완료된 주문들을 조회하여 매출 통계 매일을 전송한다.")
     @Test
@@ -48,7 +43,7 @@ class OrderStatisticsServiceTest {
         Product product3 = createProduct("소떡소떡", "003", ProductType.BAKERY, 2000);
         List<Product> products = List.of(product1, product2, product3);
         productRepository.saveAll(products);
-        int totalPrice = products.stream().mapToInt(product -> product.getPrice()).sum() * 2;
+        int totalPrice = products.stream().mapToInt(Product::getPrice).sum() * 2;
 
         Order order1 = createPaymentCompletedOrder(products, LocalDateTime.of(2024,3,31,23,59, 59));
         Order order2 = createPaymentCompletedOrder(products, now);

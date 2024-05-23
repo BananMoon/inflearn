@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import sample.cafekiosk.spring.RestDocsSupport;
@@ -51,6 +52,8 @@ class ProductControllerDocsTest extends RestDocsSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(MockMvcRestDocumentation.document("product-create",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
                         PayloadDocumentation.fieldWithPath("type").type(JsonFieldType.STRING)   // Enum은 String으로.
                             .description("상품 타입"),

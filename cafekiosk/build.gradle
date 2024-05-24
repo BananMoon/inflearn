@@ -60,6 +60,11 @@ test {
 asciidoctor {
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
+
+    sources {  //  다른 adoc들은 include로 포함되도록 하고 index.adoc으로 HTML 생성
+        include("**/index.adoc")
+    }
+    baseDirFollowsSourceFile() // 다른 adoc 파일 include 시 경로를 baseDir에 맞춘다.
     dependsOn test
 }
 // bootJar task 실행 시 output을 static/docs로 이동

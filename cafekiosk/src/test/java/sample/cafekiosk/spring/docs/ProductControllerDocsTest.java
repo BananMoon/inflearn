@@ -58,6 +58,7 @@ class ProductControllerDocsTest extends RestDocsSupport {
                         PayloadDocumentation.fieldWithPath("type").type(JsonFieldType.STRING)   // Enum은 String으로.
                             .description("상품 타입"),
                         PayloadDocumentation.fieldWithPath("sellingStatus").type(JsonFieldType.STRING)
+                            .optional()
                             .description("상품 판매상태"),
                         PayloadDocumentation.fieldWithPath("name").type(JsonFieldType.STRING)
                             .description("상품 이름"),

@@ -16,8 +16,11 @@ import sample.cafekiosk.spring.api.service.product.dto.ProductCreateServiceReque
 import sample.cafekiosk.spring.api.service.product.dto.ProductResponse;
 import sample.cafekiosk.spring.domain.product.ProductSellingStatus;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -87,6 +90,53 @@ class ProductControllerDocsTest extends RestDocsSupport {
                         PayloadDocumentation.fieldWithPath("data.price").type(JsonFieldType.NUMBER)
                             .description("상품 가격")
                     )
+                ));
+    }
+
+    @DisplayName("판매 중인 상품 조회하는 API")
+    @Test
+    void getSellingProducts() throws Exception {
+        given(productService.getSellingProducts()).willReturn(
+                List.of(ProductResponse.builder()
+                        .id(1L)
+                        .productNumber("001")
+                        .sellingStatus(ProductSellingStatus.SELLING)
+                        .name("아메리카노")
+                        .price(4000)
+                        .type(HANDMADE)
+                        .build()
+                )
+        );
+
+        mockMvc.perform(
+                        get("/api/v1/products/selling")
+        ).andDo(print())
+                .andExpect(status().isOk())
+                .andDo(MockMvcRestDocumentation.document("product-get",
+                        Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                        Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                        PayloadDocumentation.responseFields(
+                                PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.NUMBER)
+                                        .description("응답 코드"),
+                                PayloadDocumentation.fieldWithPath("status").type(JsonFieldType.STRING)
+                                        .description("응답 상태"),
+                                PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("응답 메시지"),
+                                PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.ARRAY)
+                                        .description("응답 데이터"),
+                                PayloadDocumentation.fieldWithPath("data[].id").type(JsonFieldType.NUMBER)
+                                        .description("상품 ID"),
+                                PayloadDocumentation.fieldWithPath("data[].productNumber").type(JsonFieldType.STRING)
+                                        .description("상품 번호"),
+                                PayloadDocumentation.fieldWithPath("data[].type").type(JsonFieldType.STRING)
+                                        .description("상품 상태"),
+                                PayloadDocumentation.fieldWithPath("data[].sellingStatus").type(JsonFieldType.STRING)
+                                        .description("상품 판매상태"),
+                                PayloadDocumentation.fieldWithPath("data[].name").type(JsonFieldType.STRING)
+                                        .description("상품 이름"),
+                                PayloadDocumentation.fieldWithPath("data[].price").type(JsonFieldType.NUMBER)
+                                        .description("상품 가격")
+                        )
                 ));
     }
 }

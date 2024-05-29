@@ -26,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static sample.cafekiosk.spring.domain.product.ProductType.HANDMADE;
 
+/**
+ * ProductController의 Rest Docs Test Code
+ */
 class ProductControllerDocsTest extends RestDocsSupport {
     private final ProductService productService = Mockito.mock(ProductService.class);
     @Override
@@ -113,7 +116,6 @@ class ProductControllerDocsTest extends RestDocsSupport {
         ).andDo(print())
                 .andExpect(status().isOk())
                 .andDo(MockMvcRestDocumentation.document("product-get",
-                        Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                         Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                         PayloadDocumentation.responseFields(
                                 PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.NUMBER)
@@ -129,7 +131,7 @@ class ProductControllerDocsTest extends RestDocsSupport {
                                 PayloadDocumentation.fieldWithPath("data[].productNumber").type(JsonFieldType.STRING)
                                         .description("상품 번호"),
                                 PayloadDocumentation.fieldWithPath("data[].type").type(JsonFieldType.STRING)
-                                        .description("상품 상태"),
+                                        .description("상품 타입"),
                                 PayloadDocumentation.fieldWithPath("data[].sellingStatus").type(JsonFieldType.STRING)
                                         .description("상품 판매상태"),
                                 PayloadDocumentation.fieldWithPath("data[].name").type(JsonFieldType.STRING)

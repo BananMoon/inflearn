@@ -5,7 +5,6 @@ import sample.cafekiosk.spring.domain.product.Product;
 import sample.cafekiosk.spring.domain.product.ProductSellingStatus;
 import sample.cafekiosk.spring.domain.product.ProductType;
 @Getter
-@Builder(access = AccessLevel.PRIVATE)
 public class ProductResponse {
     private Long id;
 
@@ -18,6 +17,16 @@ public class ProductResponse {
     private String name;
 
     private int price;
+
+    @Builder
+    private ProductResponse(Long id, String productNumber, ProductType type, ProductSellingStatus sellingStatus, String name, int price) {
+        this.id = id;
+        this.productNumber = productNumber;
+        this.type = type;
+        this.sellingStatus = sellingStatus;
+        this.name = name;
+        this.price = price;
+    }
 
     public static ProductResponse of(Product product) {
         return ProductResponse.builder()

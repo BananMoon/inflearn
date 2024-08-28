@@ -63,4 +63,31 @@ class StockServiceTest {
         // then
         assertThat(stock.getQuantity()).isZero();
     }
+
+    @Test
+    @DisplayName("[성공 - Trnsctional 제거 및 synchronized 추가] 동시에 재고 감소시킨다.")
+    void decrease_동시에_100개_요청_noTransactional_synchronized() throws InterruptedException {
+        // given
+        // 멀티스레드
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    stockService.decrease_noTransactional(1L, 1L);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        // when
+        Stock stock = stockRepository.findById(1L).orElseThrow();
+
+        // then
+        assertThat(stock.getQuantity()).isZero();
+    }
 }
